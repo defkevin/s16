@@ -12,6 +12,6 @@ class BigInt {
       string to_string(); // get string representation
       void add(BigInt b); // add another BigInt to this one
    private:
-      // whatever you need
+      vector<int> v;
 
 };
