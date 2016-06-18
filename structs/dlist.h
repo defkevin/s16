@@ -30,6 +30,7 @@ public:
 	Node* head() {return head_;}
 	Node* tail() {return tail_;}
 
+	bool empty() {return head_==nullptr;}
 	void print() {print_recursive(head_);}
 	void print_reverse();
 	//void print_backwards();
@@ -100,6 +101,13 @@ void dlist<T>::push_front(T x){
 
 template <typename T>
 void dlist<T>::pop_front(){
+	if(head_==nullptr){
+		return;
+	}
+	else if(head_==tail_){
+		delete head_;
+		head_ = tail_ = nullptr;
+	}
     if(head_!=nullptr) // same as if(head==nullpointer)
     {	
     	Node* p = head_->next;
@@ -122,11 +130,16 @@ std::ostream& operator<<(std::ostream& os, dlist<T>& list) {
 template <typename T>
 void dlist<T>::push_back(T x){
 	Node* n = new Node(x, nullptr, tail_);
-	tail_->next = n;
-	tail_ = n;
+	if(head_==nullptr && tail_==nullptr){
+		head_ = n;
+		tail_ = n;
+	}
+	else{
+		tail_->next = n;
+		tail_ = n;
+	}
 	if(head_ == nullptr){
 		head_ = n;
-		tail_->next = n;
 	}
 }
 

@@ -11,11 +11,10 @@ public:
 	void push_back(T n);
 	void pop_back();
 
-	T& operator[](int i);
+	T operator[](int i);
 	int size() { return size_;}
 	int capacity() {return capacity_;}
 	T& back() { return data_[size_ -1]; }
-	bool empty() {return size()==0;}
 
 private:
 	T* data_;
@@ -36,7 +35,7 @@ vector<T>::~vector() {
 }
 
 template <typename T>
-T& vector<T>::operator[](int i){
+T vector<T>::operator[](int i){
 	return data_[i];
 }
 

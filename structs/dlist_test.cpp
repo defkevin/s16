@@ -11,8 +11,10 @@ int main() {
 	BEGIN_TESTS();
 
 	dlist<int> dlr;
+	dlr.push_back(9);
 	dlr.push_front(3);
 	dlr.push_front(4);
+	dlr.pop_front();
 
 	 dlr.push_back(5);
 	 

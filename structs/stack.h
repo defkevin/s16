@@ -5,7 +5,7 @@
 #include "./vector.h"
 
 template <typename T>
-class stack {
+class stack { // Stack is a container adapter
 
 public:
 	void push(T x_){c_.push_back(x_);}
