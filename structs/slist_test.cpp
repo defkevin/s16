@@ -11,11 +11,10 @@ int main() {
 	BEGIN_TESTS();
 
 	slist<int> slr;
-	slr.push_front(3);
-	slr.push_front(4);
-	slr.push_front(5);
+	slr.push_back(3);
+	slr.push_back(4);
 	slr.print();
-	slr.reverse();
+	slr.removeAllRecursive(3);
 	slr.print();
 
 

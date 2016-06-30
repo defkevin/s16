@@ -18,8 +18,9 @@ int main() {
 	CHECK_EQ(v.size(),1);
 	CHECK_GE(v.capacity(),2);
 	v.pop_back();
-	CHECK_GE(v.capacity(),2);
-	CHECK_EQ(v.size(),0);
-	v[1] = 6;
-	CHECK_EQ(v[1], 6);
+	v.resize(10);
+	v.print();
+	CHECK_GE(v.capacity(),10);
+	CHECK_EQ(v.size(),10);
+	CHECK_EQ(v[1], 5);
 }

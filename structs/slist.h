@@ -14,8 +14,8 @@ public:
 	~slist();
 
 	struct Node{
-		Node(T v, Node* n) : value(v), next (n) {}
-		T value;
+		Node(T v, Node* n) : data(v), next (n) {}
+		T data;
 		Node* next;
 	};
 
@@ -24,6 +24,8 @@ public:
 	void push_front(T n);
 	void pop_back();
 	void reverse();
+	void removeAllRecursive(T x){ head_ =recurse(head_,x);}
+	Node* recurse(Node* n, T x);
 	
 
 	int size();
@@ -45,7 +47,7 @@ protected:
 			cout << endl; // prints at very end 
 		}
 		else{
-			cout << n->value << " ";
+			cout << n->data << " ";
 			print_recursive(n->next);
 		}
 	}
@@ -55,7 +57,7 @@ protected:
 		}
 		else{
 			print_backwards_recursive(n->next);
-			cout << n->value << " ";
+			cout << n->data << " ";
 		}
 	}
 	T sum_recursive(Node* n){		
@@ -65,7 +67,7 @@ protected:
 
 		}
 		else{
-			return n->value + sum_recursive(n->next);
+			return n->data + sum_recursive(n->next);
 		}
 	}
 	Node* head_;
@@ -87,6 +89,22 @@ typename slist<T>::Node* slist<T>::tail() {
 	return n;
 }
 
+
+template <typename T>
+typename slist<T>::Node* slist<T>::recurse(Node* n, T x){
+	if(n==nullptr){
+		return nullptr; // base case 
+	}
+	Node* t = recurse(n->next, x); // first node with list of no x's
+	if(n->data!=x){
+		n->next = t;
+		return n;
+	}
+	else{
+		delete n;
+		return t;
+	}
+}
 
 template <typename T>
 void slist<T>::reverse(){ 
@@ -152,7 +170,7 @@ template <typename T>
 std::ostream& operator<<(std::ostream& os, slist<T>& list) {
   const typename slist<T>::Node* node = list.head();
   while(node) {
-    os << node->value << "  ";
+    os << node->data << "  ";
     node = node->next;
   }
   return os;
@@ -177,10 +195,10 @@ void slist<T>::pop_back(){
 		}
 	else if(head_ != nullptr){
 		Node* n = head_;
-		cout << "head_ = " << head()->value << endl;
+		cout << "head_ = " << head()->data << endl;
 		
 
-		cout << "tail_ = " << tail()->value << endl;
+		cout << "tail_ = " << tail()->data << endl;
 		cout << "check1" << endl;
 		while(n->next!=t){
 			cout << "test" <<endl;
