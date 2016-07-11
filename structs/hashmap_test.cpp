@@ -56,7 +56,7 @@ void StringPlayerHash(){
 
 	CHECK_EQ(h["jordan"].number, 23);
 
-	 CHECK_EQ(h.find("Filip")== nullptr, true);
+	 CHECK_EQ(h.find("Filip")== nullptr, true);w
 
 }
 
