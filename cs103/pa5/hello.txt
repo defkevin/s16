@@ -1,0 +1,21 @@
+4
+0
+   Professor Redekopp
+   1978
+   90018
+   1 2 
+1
+   TA Tommy
+   1983
+   90007
+   0 
+2
+   Student Jimmy
+   1991
+   90089
+   0 
+3
+   Kevin Susai
+   1995
+   95135
+   
