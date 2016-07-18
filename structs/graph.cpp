@@ -62,7 +62,7 @@ std::vector<graph::edge> list_graph::neighbors(int v) {
 }
 
 std::vector<int> graph::bfs(int start) {
-  std::vector<int> distances(size(),-1);
+  std::vector<int> distances(size(), -1);
   std::vector<bool> visited(size(), false);
   std::queue<int> q;
   q.push(start);
@@ -185,30 +185,30 @@ std::vector<int> graph::shortest_unweighted_path(int start, int end) {
   return std::vector<int>();
 }
 
-std::vector<int> graph::shortest_paths(int start){ //dijsktra's algorithm
+std::vector<int> graph::shortest_paths(int start) { // dijsktra's algorithm
   std::vector<int> distances(size(), INT_MAX);
   std::vector<bool> visited(size(), false);
   distances[start] = 0;
-  while(true){
+  while (true) {
     int min_dist = INT_MAX;
     int current = -1;
     // Find smallest unvisited node
-    for(int i = 0; i<size();i++){
-      if(!visited[i] && distances[i]<min_dist){
+    for (int i = 0; i < size(); i++) {
+      if (!visited[i] && distances[i] < min_dist) {
         min_dist = distances[i];
         current = i;
       }
     }
-    if(current ==-1){
-        break;
+    if (current == -1) {
+      break;
     }
     visited[current] = true;
     std::vector<graph::edge> n = neighbors(current);
-    for(int i = 0; i<n.size();i++){
+    for (int i = 0; i < n.size(); i++) {
       int neighbor = n[i].neighbor;
-      if(!(visited[neighbor])){
+      if (!(visited[neighbor])) {
         int d = distances[current] + n[i].weight;
-        if(d<distances[neighbor]){
+        if (d < distances[neighbor]) {
           distances[neighbor] = d;
         }
       }

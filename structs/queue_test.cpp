@@ -1,8 +1,8 @@
 #include "../test/logging.h"
-#include "queue.h"
 #include "dlist.h"
-#include <iostream>
+#include "queue.h"
 #include <cmath>
+#include <iostream>
 #include <string>
 using std::cout;
 using std::endl;
@@ -26,7 +26,7 @@ using std::string;
 
 int main() {
 
-	BEGIN_TESTS();
+  BEGIN_TESTS();
 
   queue<string> s;
   CHECK_EQ(s.empty(), true);

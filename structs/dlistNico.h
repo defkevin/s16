@@ -3,14 +3,13 @@
 #include <cstddef>
 #include <iostream>
 
-template <typename T>
-class dlist {
+template <typename T> class dlist {
 public:
   dlist();
   ~dlist();
 
   struct Node {
-    Node(T v, Node* n, Node* p) : value(v), next(n), prev(p) { }
+    Node(T v, Node* n, Node* p) : value(v), next(n), prev(p) {}
     T value;
     Node* next;
     Node* prev;
@@ -47,7 +46,7 @@ private:
 template <typename T>
 std::ostream& operator<<(std::ostream& os, dlist<T>& list) {
   typename dlist<T>::Node* node = list.head();
-  while(node) {
+  while (node) {
     os << node->value << "  ";
     node = node->next;
   }
@@ -55,8 +54,7 @@ std::ostream& operator<<(std::ostream& os, dlist<T>& list) {
 }
 
 // Print Reverse
-template <typename T>
-void dlist<T>::print_reverse() {
+template <typename T> void dlist<T>::print_reverse() {
   Node* n = tail_;
   while (n != nullptr) {
     std::cout << n->value << " ";
@@ -72,12 +70,10 @@ void dlist<T>::print_reverse() {
 // }
 
 // Constructor
-template <typename T>
-dlist<T>::dlist() : head_(nullptr), tail_(nullptr) { }
+template <typename T> dlist<T>::dlist() : head_(nullptr), tail_(nullptr) {}
 
 // Destructor
-template <typename T>
-dlist<T>::~dlist() {
+template <typename T> dlist<T>::~dlist() {
   Node* n = head_;
   while (n != nullptr) {
     Node* next = n->next;
@@ -87,8 +83,7 @@ dlist<T>::~dlist() {
 }
 
 // Size
-template <typename T>
-int dlist<T>::size() {
+template <typename T> int dlist<T>::size() {
   int count = 0;
   Node* n = head_;
   while (n != nullptr) {
@@ -99,8 +94,7 @@ int dlist<T>::size() {
 }
 
 // Push Front
-template <typename T>
-void dlist<T>::push_front(T x) {
+template <typename T> void dlist<T>::push_front(T x) {
   Node* n = head_;
   head_ = new Node(x, head_, nullptr);
   if (tail_ == nullptr) {
@@ -111,8 +105,7 @@ void dlist<T>::push_front(T x) {
 }
 
 // Push Back
-template <typename T>
-void dlist<T>::push_back(T x) {
+template <typename T> void dlist<T>::push_back(T x) {
   Node* n = new Node(x, nullptr, tail_);
   if (head_ == nullptr) {
     head_ = tail_ = n;
@@ -126,8 +119,7 @@ void dlist<T>::push_back(T x) {
 }
 
 // Pop Back
-template <typename T>
-void dlist<T>::pop_back() {
+template <typename T> void dlist<T>::pop_back() {
   if (head_ == nullptr) {
     return;
   } else if (head_ == tail_) {
@@ -142,8 +134,7 @@ void dlist<T>::pop_back() {
 }
 
 // Pop Front
-template <typename T>
-void dlist<T>::pop_front() {
+template <typename T> void dlist<T>::pop_front() {
   if (head_ == nullptr) {
     return;
   } else if (head_ == tail_) {

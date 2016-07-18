@@ -1,22 +1,28 @@
 CC = g++
-LDFLAGS =
-SRCS = graph.cpp graph_test.cpp
-OBJ = $(SRCS:.cpp=.o)
-DEMOSRC = graph.cpp graph_test.cpp
-DEMOOBJ = $(DEMOSRC:.cpp=.o)
+GRAPH_SRCS = graph.cpp graph_test.cpp
+GRAPH_OBJ = $(GRAPH_SRCS:.cpp=.o)
 
-all: graph_test graph
+EXPRESSION_TREE_SRCS = expression_tree.cpp expression_tree_test.cpp
+EXPRESSION_TREE_OBJ = $(EXPRESSION_TREE_SRCS:.cpp=.o)
 
-graph: $(DEMOOBJ)
-	$(CC) $(DEMOOBJ) -o graph
+all: graph_test expression_tree_test
 
+graph: $(GRAPH_OBJ)
+	$(CC) $(GRAPH_OBJ) -o graph
 graph_test: graph
-	$(CC) $(OBJ) -o graph_test
+	$(CC) $(GRAPH_OBJ) -o graph_test
+
+expression_tree: $(EXPRESSION_TREE_OBJ)
+	$(CC) $(EXPRESSION_TREE_OBJ) -o expression_tree
+expression_tree_test: expression_tree
+	$(CC) $(EXPRESSION_TREE_OBJ) -o expression_tree_test
 
 .cpp.o:
 	$(CC) -c $<
 
 graph.o : graph.h
+expression_tree.o : expression_tree.h
 
 clean:
-	rm -f *.o graph *~
+	rm -f *.o graph expression_tree *~
+
