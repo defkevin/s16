@@ -1,248 +1,262 @@
-#include "expression_tree.h"
-
-#include <cassert>
+#include "ExpressionTree.h"
+#include <cmath>
 #include <iostream>
+#include <math.h>
 #include <sstream>
 #include <stack>
-#include <string>
 
 using namespace std;
 
-//
-// AbstractExpressionTree
-//
-AbstractExpressionTree::AbstractExpressionTree(std::string s) {
-  std::istringstream str(s);
-  std::stack<Node*> rpn;
+typedef ExpressionTree::Node
+    Node; // saves us time of not having to type out ExpressionTree::Node
 
-  std::string symbol;
-  while (str >> symbol) {
-    if (symbol == "+") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new AddNode(l, r));
-    } else if (symbol == "-") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new SubtractNode(l, r));
-    } else if (symbol == "*") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new MultiplyNode(l, r));
-    } else if (symbol == "/") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new DivideNode(l, r));
+string ExpressionTree::rpn() { return root_->rpn(); }
+double ExpressionTree::eval() { return root_->eval(); }
+string ExpressionTree::infix() { return root_->infix(); }
+
+struct UnaryFunc : public Node {
+  UnaryFunc(Node* a) : arg(a) {}
+  string rpn() {
+    string rpn = arg->rpn() + " " + symbol();
+    return rpn;
+  };
+  virtual string infix() {
+    string infix = symbol() + "(" + arg->infix() + ")";
+    return infix;
+  }
+  Node* arg;
+};
+
+struct BinaryFunc : public Node {
+  BinaryFunc(Node* a, Node* b) : left(a), right(b) {}
+  string rpn() {
+    string rpn = left->rpn() + " " + right->rpn() + " " + symbol();
+    return rpn;
+  };
+  string infix() {
+    string infix = symbol() + "(" + right->infix() + "," + left->infix() + ")";
+    return infix;
+  }
+  Node* left;
+  Node* right;
+};
+
+struct BinaryOp : public BinaryFunc {
+  BinaryOp(Node* l, Node* r) : BinaryFunc(l, r) {}
+  virtual string infix() {
+    string infix =
+        "(" + left->infix() + " " + symbol() + " " + right->infix() + ")";
+    return infix;
+  }
+};
+
+struct Number : public Node {
+  double value;
+  Number(double v) : value(v) {}
+  double eval() { return value; }
+  string rpn() {
+    ostringstream strs;
+    strs << value;
+    string str = strs.str();
+    return str;
+  }
+  string symbol() { return rpn(); }
+  string infix() { return rpn(); }
+};
+
+struct Abs : public UnaryFunc {
+  Abs(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "abs"; }
+  double eval() { return abs(arg->eval()); }
+};
+
+struct Round : public UnaryFunc {
+  Round(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "round"; }
+  double eval() { return round(arg->eval()); }
+};
+
+struct Floor : public UnaryFunc {
+  Floor(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "floor"; }
+  double eval() { return floor(arg->eval()); }
+};
+
+struct Ceiling : public UnaryFunc {
+  Ceiling(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "ceil"; }
+  double eval() { return ceil(arg->eval()); }
+};
+
+struct Cos : public UnaryFunc {
+  Cos(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "cos"; }
+  double eval() { return cos((arg->eval() * M_PI) / 180); }
+};
+
+struct Sin : public UnaryFunc {
+  Sin(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "sin"; }
+  double eval() { return sin((arg->eval() * M_PI) / 180); }
+};
+
+struct Tan : public UnaryFunc {
+  Tan(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "tan"; }
+  double eval() { return tan((arg->eval() * M_PI) / 180); }
+};
+
+struct Fact : public UnaryFunc {
+  int factorial(int num) {
+    int product;
+    if (num <= 1) {
+      return 1;
     } else {
-      int value = stoi(symbol);
-      rpn.push(new ValueNode(value));
+      product = num * factorial(num - 1);
     }
+    return product;
   }
+  Fact(Node* arg) : UnaryFunc(arg) {}
+  string symbol() { return "!"; }
+  double eval() {
+    return factorial(arg->eval());
+  }
+  virtual string infix() {
+      string infix =  arg->infix() + "!";
+      return infix;
+    }
+};
 
-  root_ = rpn.top();
-}
+struct Max : public BinaryFunc {
+  Max(Node* arg1, Node* arg2) : BinaryFunc(arg1, arg2) {}
+  string symbol() { return "max"; }
+  double eval() { return max(left->eval(), right->eval()); }
+};
 
-AbstractExpressionTree::~AbstractExpressionTree() { delete root_; }
+struct Min : public BinaryFunc {
+  Min(Node* arg1, Node* arg2) : BinaryFunc(arg1, arg2) {}
+  string symbol() { return "min"; }
+  double eval() { return min(left->eval(), right->eval()); }
+};
 
-void AbstractExpressionTree::PrintPreOrder() {
-  root_->PrintPreOrder();
-  cout << endl;
-}
-void AbstractExpressionTree::PrintInOrder() {
-  root_->PrintInOrder();
-  cout << endl;
-}
-void AbstractExpressionTree::PrintPostOrder() {
-  root_->PrintPostOrder();
-  cout << endl;
-}
+struct Pow : public BinaryFunc {
+  Pow(Node* arg1, Node* arg2) : BinaryFunc(arg1, arg2) {}
+  string symbol() { return "^"; }
+  double eval() { return pow(right->eval(), left->eval()); }
+};
 
-int AbstractExpressionTree::eval() {
-  assert(root_ != nullptr);
-  return root_->eval();
-}
+struct AddOp : public BinaryOp {
+  AddOp(Node* l, Node* r) : BinaryOp(l, r) {}
+  string symbol() { return "+"; }
+  double eval() { return left->eval() + right->eval(); }
+};
 
-void AbstractExpressionTree::BinaryNode::PrintInOrder() {
-  cout << "(";
-  left->PrintInOrder();
-  cout << " " << symbol() << " ";
-  right->PrintInOrder();
-  cout << ")";
-}
-void AbstractExpressionTree::BinaryNode::PrintPreOrder() {
-  cout << " " << symbol() << " ";
-  left->PrintPreOrder();
-  cout << " ";
-  right->PrintPreOrder();
-}
-void AbstractExpressionTree::BinaryNode::PrintPostOrder() {
-  left->PrintPreOrder();
-  cout << " ";
-  right->PrintPreOrder();
-  cout << " " << symbol() << " ";
-}
+struct SubtractOp : public BinaryOp {
+  SubtractOp(Node* l, Node* r) : BinaryOp(l, r) {}
+  string symbol() { return "-"; }
+  double eval() { return left->eval() - right->eval(); }
+};
+struct MultiplyOp : public BinaryOp {
+  MultiplyOp(Node* l, Node* r) : BinaryOp(l, r) {}
+  string symbol() { return "*"; }
+  double eval() { return left->eval() * right->eval(); }
+};
+struct DivideOp : public BinaryOp {
+  DivideOp(Node* l, Node* r) : BinaryOp(l, r) {}
+  string symbol() { return "/"; }
+  double eval() { return left->eval() / right->eval(); }
+};
 
-AbstractExpressionTree::AddNode::AddNode(Node* l, Node* r) : BinaryNode(l, r) {}
-int AbstractExpressionTree::AddNode::eval() {
-  return left->eval() + right->eval();
-}
-
-AbstractExpressionTree::SubtractNode::SubtractNode(Node* l, Node* r)
-    : BinaryNode(l, r) {}
-int AbstractExpressionTree::SubtractNode::eval() {
-  return left->eval() - right->eval();
-}
-
-AbstractExpressionTree::DivideNode::DivideNode(Node* l, Node* r)
-    : BinaryNode(l, r) {}
-int AbstractExpressionTree::DivideNode::eval() {
-  return left->eval() / right->eval();
-}
-
-AbstractExpressionTree::MultiplyNode::MultiplyNode(Node* l, Node* r)
-    : BinaryNode(l, r) {}
-int AbstractExpressionTree::MultiplyNode::eval() {
-  return left->eval() * right->eval();
-}
-
-int AbstractExpressionTree::ValueNode::eval() { return value; }
-void AbstractExpressionTree::ValueNode::PrintInOrder() { cout << value; }
-void AbstractExpressionTree::ValueNode::PrintPreOrder() { PrintInOrder(); }
-void AbstractExpressionTree::ValueNode::PrintPostOrder() { PrintInOrder(); }
-
-// Ouput a dot file to give to WebGraphViz.com
-void AbstractExpressionTree::output_dot(std::string filename) {}
-
-//
-// ExpressionTree
-//
-ExpressionTree::ExpressionTree(std::string s) {
-  std::istringstream str(s);
-  std::stack<Node*> rpn;
-
-  std::string symbol;
-  while (str >> symbol) {
-    if (symbol == "+") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new Node(Node::Add, l, r));
-    } else if (symbol == "-") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new Node(Node::Subtract, l, r));
-    } else if (symbol == "*") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new Node(Node::Multiply, l, r));
-    } else if (symbol == "/") {
-      Node* r = rpn.top();
-      rpn.pop();
-      Node* l = rpn.top();
-      rpn.pop();
-      rpn.push(new Node(Node::Divide, l, r));
+ExpressionTree::Node* pop_top(stack<ExpressionTree::Node*>& rpn,
+                              string symbol) {
+  if (rpn.empty()) {
+    if (symbol.empty()) {
+      throw invalid_argument("bad expression");
     } else {
-      int value = stoi(symbol);
-      rpn.push(new Node(value));
+      throw invalid_argument("bad expression for symbol " + symbol);
     }
   }
-
-  root_ = rpn.top();
+  ExpressionTree::Node* t = rpn.top();
+  rpn.pop();
+  return t;
 }
 
-ExpressionTree::~ExpressionTree() { delete root_; }
-
-void ExpressionTree::PrintPreOrder() {
-  root_->PrintPreOrder();
-  cout << endl;
-}
-void ExpressionTree::PrintInOrder() {
-  root_->PrintInOrder();
-  cout << endl;
-}
-void ExpressionTree::PrintPostOrder() {
-  root_->PrintPostOrder();
-  cout << endl;
-}
-
-int ExpressionTree::eval() {
-  assert(root_ != nullptr);
-  return root_->eval();
-}
-ExpressionTree::Node::~Node() {
-  delete left;
-  delete right;
-}
-
-void ExpressionTree::Node::PrintInOrder() {
-  if (op == Value) {
-    cout << value;
-  } else {
-    cout << "(";
-    left->PrintInOrder();
-    switch (op) {
-    case Add:
-      cout << " + ";
-      break;
-    case Subtract:
-      cout << " - ";
-      break;
-    case Multiply:
-      cout << " * ";
-      break;
-    case Divide:
-      cout << " / ";
-      break;
-    default:
-      cout << " BadType ";
-      break;
+ExpressionTree::ExpressionTree(string s) {
+  stack<Node*> stk;
+  string symbol = s;
+  istringstream iss(symbol);
+  while (iss >> symbol) {
+    istringstream num(symbol);
+    double value;
+    if (num >> value) {
+      stk.push(new Number(value));
     }
-    right->PrintInOrder();
-    cout << ")";
+    if (symbol == "+") {
+      Node* r = pop_top(stk, symbol);
+      Node* l = pop_top(stk, symbol);
+      stk.push(new AddOp(l, r));
+    }
+    if (symbol == "-") {
+      Node* r = pop_top(stk, symbol);
+      Node* l = pop_top(stk, symbol);
+      stk.push(new SubtractOp(l, r));
+    }
+    if (symbol == "*") {
+      Node* r = pop_top(stk, symbol);
+      Node* l = pop_top(stk, symbol);
+      stk.push(new MultiplyOp(l, r));
+    }
+    if (symbol == "/") {
+      Node* r = pop_top(stk, symbol);
+      Node* l = pop_top(stk, symbol);
+      stk.push(new DivideOp(l, r));
+    }
+    if (symbol == "abs") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Abs(args));
+    }
+    if (symbol == "round") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Round(args));
+    }
+    if (symbol == "floor") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Floor(args));
+    }
+    if (symbol == "cos") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Cos(args));
+    }
+    if (symbol == "sin") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Sin(args));
+    }
+    if (symbol == "tan") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Tan(args));
+    }
+    if (symbol == "!") {
+      Node* args = pop_top(stk, symbol);
+      stk.push(new Fact(args));
+    }
+    if (symbol == "max") {
+      Node* arg1 = pop_top(stk, symbol);
+      Node* arg2 = pop_top(stk, symbol);
+      stk.push(new Max(arg1, arg2));
+    }
+    if (symbol == "min") {
+      Node* arg1 = pop_top(stk, symbol);
+      Node* arg2 = pop_top(stk, symbol);
+      stk.push(new Min(arg1, arg2));
+    }
+    if (symbol == "^") {
+      Node* arg1 = pop_top(stk, symbol);
+      Node* arg2 = pop_top(stk, symbol);
+      stk.push(new Pow(arg1, arg2));
+    }
+  }
+  root_ = pop_top(stk, "");
+  if (!stk.empty()) {
+    throw invalid_argument("stack is not empty!");
   }
 }
-void ExpressionTree::Node::PrintPreOrder() {}
-void ExpressionTree::Node::PrintPostOrder() {}
-
-int ExpressionTree::Node::eval() {
-  switch (op) {
-  case Add:
-    return left->eval() + right->eval();
-    break;
-
-  case Subtract:
-    return left->eval() - right->eval();
-
-  case Multiply:
-    return left->eval() * right->eval();
-    break;
-
-  case Divide:
-    return left->eval() / right->eval();
-    break;
-
-  case Value:
-    return value;
-    break;
-
-  default:
-    std::cout << "Bad enum value " << op << std::endl;
-    break;
-  }
-}
-
-// Ouput a dot file to give to WebGraphViz.com
-void ExpressionTree::output_dot(std::string filename) {}

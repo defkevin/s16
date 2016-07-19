@@ -7,14 +7,10 @@ EXPRESSION_TREE_OBJ = $(EXPRESSION_TREE_SRCS:.cpp=.o)
 
 all: graph_test expression_tree_test
 
-graph: $(GRAPH_OBJ)
-	$(CC) $(GRAPH_OBJ) -o graph
-graph_test: graph
+graph_test: $(GRAPH_OBJ)
 	$(CC) $(GRAPH_OBJ) -o graph_test
 
-expression_tree: $(EXPRESSION_TREE_OBJ)
-	$(CC) $(EXPRESSION_TREE_OBJ) -o expression_tree
-expression_tree_test: expression_tree
+expression_tree_test: $(EXPRESSION_TREE_OBJ)
 	$(CC) $(EXPRESSION_TREE_OBJ) -o expression_tree_test
 
 .cpp.o:
@@ -24,5 +20,4 @@ graph.o : graph.h
 expression_tree.o : expression_tree.h
 
 clean:
-	rm -f *.o graph expression_tree *~
-
+	rm -f *.o graph_test expression_tree_test *~

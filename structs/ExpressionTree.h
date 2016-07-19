@@ -14,7 +14,6 @@ public:
   double eval();
 
   struct Node {
-    Node(double value);
     virtual double eval() = 0; // pure virtual is equal to zero
     virtual std::string rpn() = 0;
     virtual std::string infix() = 0;
