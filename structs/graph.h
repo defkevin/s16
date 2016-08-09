@@ -18,20 +18,20 @@ public:
                                              // methods. add_edge method doesn't
                                              // have anything
   virtual bool remove_edge(int v1, int v2) = 0;
-  virtual bool edge_exists(int v1, int v2) = 0;
+  virtual bool edge_exists(int v1, int v2) const = 0;
 
-  virtual int size() = 0;
+  virtual int size() const = 0;
 
-  virtual std::vector<edge> neighbors(int v) = 0;
-  std::vector<int> bfs(int root);
+  virtual std::vector<edge> neighbors(int v) const = 0;
+  std::vector<int> bfs(int root) const;
 
   // last element
-  std::vector<int> shortest_unweighted_path(int start, int end);
+  std::vector<int> shortest_unweighted_path(int start, int end) const;
   // use dijsktra's algorithm to get the shortest distance from start to all
   // other nodes
-  std::vector<int> shortest_paths(int start);
+  std::vector<int> shortest_paths(int start) const;
 
-  void print();
+  void print() const;
 };
 
 // derived class
@@ -44,15 +44,15 @@ public:
   bool add_edge(int v1, int v2, int weight = 1);
   bool remove_edge(int v1, int v2);
   // return true if edge exists. false if it does not
-  bool edge_exists(int v1, int v2);
+  bool edge_exists(int v1, int v2) const;
 
   // get the number of nodes
-  int size() { return adj_.size(); }
+  int size() const { return adj_.size(); }
 
   // get the neighbors of Node v
-  std::vector<edge> neighbors(int v);
+  std::vector<edge> neighbors(int v) const;
   // return distance from root to every node. if node isn't reachable return -1
-  void bfs(int root, std::vector<int> *distances);
+  void bfs(int root, std::vector<int> *distances) const;
 
 private:
   std::vector<std::vector<edge> > adj_;
@@ -64,9 +64,9 @@ public:
 
   bool add_edge(int v1, int v2, int weight = 1);
   bool remove_edge(int v1, int v2);
-  bool edge_exists(int v1, int v2);
-  int size() { return matrix_.size(); }
-  std::vector<edge> neighbors(int v);
+  bool edge_exists(int v1, int v2) const;
+  int size() const { return matrix_.size(); }
+  std::vector<edge> neighbors(int v) const;
 
 private:
   std::vector<std::vector<int> > matrix_;

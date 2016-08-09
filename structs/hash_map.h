@@ -22,8 +22,8 @@ public:
   hash_map(int n) { v_.resize(n); }
   ~hash_map() {}
 
-  V& operator[](std::string key);
-  V* find(std::string key);
+  V& operator[](const std::string& key);
+  V* find(const std::string& key);
 
 private:
   typedef key_value<std::string, V> KV;
@@ -32,7 +32,7 @@ private:
   vector<ListType> v_;
 };
 
-template <typename V> V& hash_map<V>::operator[](std::string key) {
+template <typename V> V& hash_map<V>::operator[](const std::string& key) {
   int bucket = DJBHash(key) % v_.size();
   ListType& list = v_[bucket];
 
@@ -47,7 +47,7 @@ template <typename V> V& hash_map<V>::operator[](std::string key) {
   return list.head()->data.value;
 }
 
-template <typename V> V* hash_map<V>::find(std::string key) {
+template <typename V> V* hash_map<V>::find(const std::string& key) {
   int bucket = DJBHash(key) % v_.size();
   ListType& list = v_[bucket];
 

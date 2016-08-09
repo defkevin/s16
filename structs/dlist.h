@@ -12,28 +12,28 @@ public:
   ~dlist();
 
   struct Node {
-    Node(T v, Node *n, Node *p) : value(v), next(n), prev(p) {}
+    Node(const T &v, Node *n, Node *p) : value(v), next(n), prev(p) {}
     T value;
     Node *next;
     Node *prev;
   };
 
-  void push_back(T n);
-  void push_front(T n);
+  void push_back(const T &n);
+  void push_front(const T &n);
   void pop_front();
   void pop_back();
 
-  int size();
-  Node *head() { return head_; }
-  Node *tail() { return tail_; }
+  int size() const;
+  const Node *head() const { return head_; }
+  const Node *tail() const { return tail_; }
 
-  bool empty() { return head_ == nullptr; }
-  void print() { print_recursive(head_); }
-  void print_reverse();
+  bool empty() const { return head_ == nullptr; }
+  void print() const { print_recursive(head_); }
+  void print_reverse() const;
   // void print_backwards();
 
 protected:
-  void print_recursive(Node *n) {
+  void print_recursive(const Node *n) const {
     if (n == nullptr) {
       cout << endl; // prints at very end
     } else {
@@ -45,7 +45,7 @@ protected:
   Node *tail_;
 };
 
-template <typename T> void dlist<T>::print_reverse() {
+template <typename T> void dlist<T>::print_reverse() const {
   Node *n = tail_;
   while (n != nullptr) {
     cout << n->value << " ";
@@ -67,7 +67,7 @@ template <typename T> dlist<T>::~dlist() {
   }
 }
 
-template <typename T> int dlist<T>::size() {
+template <typename T> int dlist<T>::size() const {
   Node *n = head_;
   int count = 0;
   while (n != nullptr) {
@@ -78,7 +78,7 @@ template <typename T> int dlist<T>::size() {
   return count;
 }
 
-template <typename T> void dlist<T>::push_front(T x) {
+template <typename T> void dlist<T>::push_front(const T &x) {
   Node *n = head_;
   head_ = new Node(x, head_, nullptr);
   if (tail_ == nullptr) {
@@ -105,7 +105,7 @@ template <typename T> void dlist<T>::pop_front() {
 }
 
 template <typename T>
-std::ostream &operator<<(std::ostream &os, dlist<T> &list) {
+std::ostream &operator<<(std::ostream &os, const dlist<T> &list) {
   const typename dlist<T>::Node *node = list.head();
   while (node) {
     os << node->value << "  ";
@@ -114,7 +114,7 @@ std::ostream &operator<<(std::ostream &os, dlist<T> &list) {
   return os;
 }
 
-template <typename T> void dlist<T>::push_back(T x) {
+template <typename T> void dlist<T>::push_back(const T &x) {
   Node *n = new Node(x, nullptr, tail_);
   if (head_ == nullptr && tail_ == nullptr) {
     head_ = n;

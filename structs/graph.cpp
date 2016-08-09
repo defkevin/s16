@@ -45,7 +45,7 @@ bool list_graph::remove_edge(int v1, int v2) {
   }
 }
 
-bool list_graph::edge_exists(int v1, int v2) {
+bool list_graph::edge_exists(int v1, int v2) const {
   assert(v1 >= 0 && v1 < size());
   assert(v2 >= 0 && v2 < size());
   for (int i = 0; i < adj_[v1].size(); i++) {
@@ -56,12 +56,12 @@ bool list_graph::edge_exists(int v1, int v2) {
   return false;
 }
 
-std::vector<graph::edge> list_graph::neighbors(int v) {
+std::vector<graph::edge> list_graph::neighbors(int v) const {
   assert(v >= 0 && v < size());
   return adj_[v];
 }
 
-std::vector<int> graph::bfs(int start) {
+std::vector<int> graph::bfs(int start) const {
   std::vector<int> distances(size(), -1);
   std::vector<bool> visited(size(), false);
   std::queue<int> q;
@@ -115,13 +115,13 @@ bool matrix_graph::remove_edge(int v1, int v2) {
   return false;
 }
 
-bool matrix_graph::edge_exists(int v1, int v2) {
+bool matrix_graph::edge_exists(int v1, int v2) const {
   assert(v1 >= 0 && v1 < size());
   assert(v2 >= 0 && v2 < size());
   return matrix_[v1][v2] != 0;
 }
 
-std::vector<graph::edge> matrix_graph::neighbors(int v) {
+std::vector<graph::edge> matrix_graph::neighbors(int v) const {
   std::vector<edge> n;
   for (int i = 0; i < size(); i++) {
     if (matrix_[v][i] != 0) {
@@ -131,7 +131,7 @@ std::vector<graph::edge> matrix_graph::neighbors(int v) {
   return n;
 }
 
-void graph::print() {
+void graph::print() const {
   for (int i = 0; i < size(); i++) {
     std::cout << i << ": ";
     std::vector<edge> n = neighbors(i);
@@ -143,7 +143,7 @@ void graph::print() {
   }
 }
 
-std::vector<int> graph::shortest_unweighted_path(int start, int end) {
+std::vector<int> graph::shortest_unweighted_path(int start, int end) const {
   assert(start >= 0 && start < size());
   assert(end >= 0 && end < size());
 
@@ -185,7 +185,8 @@ std::vector<int> graph::shortest_unweighted_path(int start, int end) {
   return std::vector<int>();
 }
 
-std::vector<int> graph::shortest_paths(int start) { // dijsktra's algorithm
+std::vector<int>
+graph::shortest_paths(int start) const { // dijsktra's algorithm
   std::vector<int> distances(size(), INT_MAX);
   std::vector<bool> visited(size(), false);
   distances[start] = 0;

@@ -1,4 +1,4 @@
-#include "ExpressionTree.h"
+#include "expression_tree.h"
 #include <cmath>
 #include <iostream>
 #include <math.h>
@@ -10,17 +10,17 @@ using namespace std;
 typedef ExpressionTree::Node
     Node; // saves us time of not having to type out ExpressionTree::Node
 
-string ExpressionTree::rpn() { return root_->rpn(); }
-double ExpressionTree::eval() { return root_->eval(); }
-string ExpressionTree::infix() { return root_->infix(); }
+string ExpressionTree::rpn() const { return root_->rpn(); }
+double ExpressionTree::eval() const { return root_->eval(); }
+string ExpressionTree::infix() const { return root_->infix(); }
 
 struct UnaryFunc : public Node {
   UnaryFunc(Node* a) : arg(a) {}
-  string rpn() {
+  string rpn() const {
     string rpn = arg->rpn() + " " + symbol();
     return rpn;
   };
-  virtual string infix() {
+  virtual string infix() const {
     string infix = symbol() + "(" + arg->infix() + ")";
     return infix;
   }
@@ -29,11 +29,11 @@ struct UnaryFunc : public Node {
 
 struct BinaryFunc : public Node {
   BinaryFunc(Node* a, Node* b) : left(a), right(b) {}
-  string rpn() {
+  string rpn() const {
     string rpn = left->rpn() + " " + right->rpn() + " " + symbol();
     return rpn;
   };
-  string infix() {
+  string infix() const {
     string infix = symbol() + "(" + right->infix() + "," + left->infix() + ")";
     return infix;
   }
@@ -43,7 +43,7 @@ struct BinaryFunc : public Node {
 
 struct BinaryOp : public BinaryFunc {
   BinaryOp(Node* l, Node* r) : BinaryFunc(l, r) {}
-  virtual string infix() {
+  virtual string infix() const {
     string infix =
         "(" + left->infix() + " " + symbol() + " " + right->infix() + ")";
     return infix;
@@ -53,61 +53,61 @@ struct BinaryOp : public BinaryFunc {
 struct Number : public Node {
   double value;
   Number(double v) : value(v) {}
-  double eval() { return value; }
-  string rpn() {
+  double eval() const { return value; }
+  string rpn() const {
     ostringstream strs;
     strs << value;
     string str = strs.str();
     return str;
   }
-  string symbol() { return rpn(); }
-  string infix() { return rpn(); }
+  string symbol() const { return rpn(); }
+  string infix() const { return rpn(); }
 };
 
 struct Abs : public UnaryFunc {
   Abs(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "abs"; }
-  double eval() { return abs(arg->eval()); }
+  string symbol() const { return "abs"; }
+  double eval() const { return abs(arg->eval()); }
 };
 
 struct Round : public UnaryFunc {
   Round(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "round"; }
-  double eval() { return round(arg->eval()); }
+  string symbol() const { return "round"; }
+  double eval() const { return round(arg->eval()); }
 };
 
 struct Floor : public UnaryFunc {
   Floor(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "floor"; }
-  double eval() { return floor(arg->eval()); }
+  string symbol() const { return "floor"; }
+  double eval() const { return floor(arg->eval()); }
 };
 
 struct Ceiling : public UnaryFunc {
   Ceiling(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "ceil"; }
-  double eval() { return ceil(arg->eval()); }
+  string symbol() const { return "ceil"; }
+  double eval() const { return ceil(arg->eval()); }
 };
 
 struct Cos : public UnaryFunc {
   Cos(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "cos"; }
-  double eval() { return cos((arg->eval() * M_PI) / 180); }
+  string symbol() const { return "cos"; }
+  double eval() const { return cos((arg->eval() * M_PI) / 180); }
 };
 
 struct Sin : public UnaryFunc {
   Sin(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "sin"; }
-  double eval() { return sin((arg->eval() * M_PI) / 180); }
+  string symbol() const { return "sin"; }
+  double eval() const { return sin((arg->eval() * M_PI) / 180); }
 };
 
 struct Tan : public UnaryFunc {
   Tan(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "tan"; }
-  double eval() { return tan((arg->eval() * M_PI) / 180); }
+  string symbol() const { return "tan"; }
+  double eval() const { return tan((arg->eval() * M_PI) / 180); }
 };
 
 struct Fact : public UnaryFunc {
-  int factorial(int num) {
+  int factorial(int num) const {
     int product;
     if (num <= 1) {
       return 1;
@@ -117,54 +117,52 @@ struct Fact : public UnaryFunc {
     return product;
   }
   Fact(Node* arg) : UnaryFunc(arg) {}
-  string symbol() { return "!"; }
-  double eval() {
-    return factorial(arg->eval());
+  string symbol() const { return "!"; }
+  double eval() const { return factorial(arg->eval()); }
+  virtual string infix() const {
+    string infix = arg->infix() + "!";
+    return infix;
   }
-  virtual string infix() {
-      string infix =  arg->infix() + "!";
-      return infix;
-    }
 };
 
 struct Max : public BinaryFunc {
   Max(Node* arg1, Node* arg2) : BinaryFunc(arg1, arg2) {}
-  string symbol() { return "max"; }
-  double eval() { return max(left->eval(), right->eval()); }
+  string symbol() const { return "max"; }
+  double eval() const { return max(left->eval(), right->eval()); }
 };
 
 struct Min : public BinaryFunc {
   Min(Node* arg1, Node* arg2) : BinaryFunc(arg1, arg2) {}
-  string symbol() { return "min"; }
-  double eval() { return min(left->eval(), right->eval()); }
+  string symbol() const { return "min"; }
+  double eval() const { return min(left->eval(), right->eval()); }
 };
 
 struct Pow : public BinaryFunc {
   Pow(Node* arg1, Node* arg2) : BinaryFunc(arg1, arg2) {}
-  string symbol() { return "^"; }
-  double eval() { return pow(right->eval(), left->eval()); }
+  string symbol() const { return "^"; }
+  double eval() const { return pow(right->eval(), left->eval()); }
 };
 
 struct AddOp : public BinaryOp {
   AddOp(Node* l, Node* r) : BinaryOp(l, r) {}
-  string symbol() { return "+"; }
-  double eval() { return left->eval() + right->eval(); }
+  string symbol() const { return "+"; }
+  double eval() const { return left->eval() + right->eval(); }
 };
 
 struct SubtractOp : public BinaryOp {
   SubtractOp(Node* l, Node* r) : BinaryOp(l, r) {}
-  string symbol() { return "-"; }
-  double eval() { return left->eval() - right->eval(); }
+  string symbol() const { return "-"; }
+  double eval() const { return left->eval() - right->eval(); }
 };
 struct MultiplyOp : public BinaryOp {
   MultiplyOp(Node* l, Node* r) : BinaryOp(l, r) {}
-  string symbol() { return "*"; }
-  double eval() { return left->eval() * right->eval(); }
+  string symbol() const { return "*"; }
+  double eval() const { return left->eval() * right->eval(); }
 };
 struct DivideOp : public BinaryOp {
   DivideOp(Node* l, Node* r) : BinaryOp(l, r) {}
-  string symbol() { return "/"; }
-  double eval() { return left->eval() / right->eval(); }
+  string symbol() const { return "/"; }
+  double eval() const { return left->eval() / right->eval(); }
 };
 
 ExpressionTree::Node* pop_top(stack<ExpressionTree::Node*>& rpn,
@@ -181,7 +179,7 @@ ExpressionTree::Node* pop_top(stack<ExpressionTree::Node*>& rpn,
   return t;
 }
 
-ExpressionTree::ExpressionTree(string s) {
+ExpressionTree::ExpressionTree(const string& s) {
   stack<Node*> stk;
   string symbol = s;
   istringstream iss(symbol);
